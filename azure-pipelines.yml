@@ -3,6 +3,10 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+resources:
+- repo: self
+  clean: true
+
 trigger:
 - master
 
@@ -10,5 +14,17 @@ pool:
   vmImage: 'win1803'
 
 steps:
-- script: powershell -File "build/build-from-ci.ps1"
-  displayName: 'Run the build-from-ci.ps1 script'
+- powershell: Install-Module PSDepend -Scope CurrentUser -Force
+  displayName: Install PSDepend
+  name: install_psdepend
+  workingDirectory: $(build.sourcesDirectory)
+
+- powershell: Invoke-PSDepend -Path "build/Requirements.psd1"
+  displayName: Install other pre-requisites using PSDepend
+  name: invoke_psdepend
+  workingDirectory: $(build.sourcesDirectory)
+
+- powershell: Invoke-Build "build/build.ps1"
+  displayName: Run build script
+  name: run_build
+  workingDirectory: $(build.sourcesDirectory)
