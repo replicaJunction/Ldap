@@ -10,5 +10,5 @@ pool:
   vmImage: 'win1803'
 
 steps:
-- script: build/build-from-ci.ps1
+- script: powershell -File "build/build-from-ci.ps1"
   displayName: 'Run the build-from-ci.ps1 script'
