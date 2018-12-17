@@ -1,0 +1,2 @@
+# Ignore the artifacts folder, as build output gets written there
+artifacts/*

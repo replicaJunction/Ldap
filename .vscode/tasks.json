@@ -1,0 +1,106 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "windows": {
+        "options": {
+            "shell": {
+                "executable": "${env:windir}/System32/WindowsPowerShell/v1.0/powershell.exe",
+                "args": [
+                    "-NoProfile",
+                    "-ExecutionPolicy Bypass",
+                    "-Command "
+                ]
+            }
+        }
+    },
+    "linux": {
+        "options": {
+            "shell": {
+                "executable": "/usr/bin/powershell",
+                "args": [
+                    "-NoProfile",
+                    "-Command "
+                ]
+            }
+        }
+    },
+    "osx": {
+        "options": {
+            "shell": {
+                "executable": "/usr/local/bin/powershell",
+                "args": [
+                    "-NoProfile",
+                    "-Command "
+                ]
+            }
+        }
+    },
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "Invoke-Build",
+            "args": [
+                "-File",
+                "\"${workspaceRoot}\\build\\build.ps1\"",
+                "-Task",
+                "."
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build (Verbose)",
+            "type": "shell",
+            "command": "Invoke-Build",
+            "args": [
+                "-File",
+                "\"${workspaceRoot}\\build\\build.ps1\"",
+                "-Task",
+                ".",
+                "-Verbose"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Install",
+            "type": "shell",
+            "command": "Invoke-Build",
+            "args": [
+                "-File",
+                "\"${workspaceRoot}\\build\\build.ps1\"",
+                "-Task",
+                "Install"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Publish",
+            "type": "shell",
+            "command": "Invoke-Build",
+            "args": [
+                "-File",
+                "\"${workspaceRoot}\\build\\build.ps1\"",
+                "-Task",
+                "Publish"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}
