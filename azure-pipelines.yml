@@ -24,7 +24,7 @@ steps:
   name: invoke_psdepend
   workingDirectory: $(build.sourcesDirectory)
 
-- powershell: Invoke-Build "build/build.ps1"
+- powershell: Invoke-Build "build/build.ps1" -Verbose
   displayName: Run build script
   name: run_build
   workingDirectory: $(build.sourcesDirectory)
