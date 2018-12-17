@@ -1,7 +1,7 @@
 # Dot source this script in any Pester test script that requires the module to be imported.
 
 $ProjectRoot = Split-Path $PSScriptRoot -Parent
-if (Get-Item env:\BHProjectName) {
+if ($env:BHProjectName) {
     $ProjectName = $env:BHProjectName
 }
 else {
