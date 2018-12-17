@@ -20,7 +20,7 @@ steps:
   workingDirectory: $(build.sourcesDirectory)
 
 - powershell: Invoke-PSDepend -Path "build/Requirements.psd1" -Verbose -Force
-  displayName: 'Install other pre-requisites using PSDepend'
+  displayName: 'I2stall other pre-requisites using PSDepend'
   name: invoke_psdepend
   workingDirectory: $(build.sourcesDirectory)
 
@@ -29,7 +29,7 @@ steps:
   name: run_build
   workingDirectory: $(build.sourcesDirectory)
 
-- task: Publish test results
+- task: PublishTestResults@2
   inputs:
     testRunner: 'NUnit'
     testResultsFiles: '**/artifacts/PesterResults.xml'
