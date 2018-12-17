@@ -19,7 +19,7 @@ steps:
   name: install_psdepend
   workingDirectory: $(build.sourcesDirectory)
 
-- powershell: Invoke-PSDepend -Path "build/Requirements.psd1"
+- powershell: Invoke-PSDepend -Path "build/Requirements.psd1" -Verbose -Force
   displayName: Install other pre-requisites using PSDepend
   name: invoke_psdepend
   workingDirectory: $(build.sourcesDirectory)
