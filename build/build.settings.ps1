@@ -104,9 +104,8 @@ task DisableModuleAutoImport -Before RunTests {
     Write-Host "Disabling module auto-import" -ForegroundColor Magenta
     $global:PSModuleAutoLoadingPreference = 'None'
 
-    # Since we've disabled module import, we need to manually import Pester,
-    # as well as ActiveDirectory (since this module depends on the AD module)
-    Import-Module Pester, ActiveDirectory
+    # Since we've disabled module import, we need to manually import Pester
+    Import-Module Pester
 }
 
 task EnableModuleAutoImport -After RunTests {
