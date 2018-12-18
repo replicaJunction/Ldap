@@ -5,7 +5,7 @@
 ##############################################################################
 
 # This is an Invoke-Build build script.
-# Version 1.5.9
+# Version 1.6.0
 
 # $ProjectRoot = Split-Path $PSScriptRoot -Parent
 # $ProjectName = Split-Path $ProjectRoot -Leaf
@@ -13,6 +13,10 @@
 Set-StrictMode -Version Latest
 
 task . Init, Analyze, Test, Build
+
+# https://github.com/RamblingCookieMonster/BuildHelpers/issues/10
+# Set-BuildEnvironment -Path (Split-Path $PSScriptRoot -Parent)
+. Set-BuildVariable -Path (Split-Path $PSScriptRoot -Parent) -Scope Script
 
 # Load Settings file
 $settingsFile = "$PSScriptRoot\build.settings.ps1"
@@ -48,10 +52,6 @@ task InstallDependencies {
 ########################################################################
 
 task Init {
-    # https://github.com/RamblingCookieMonster/BuildHelpers/issues/10
-    # Set-BuildEnvironment -Path $ProjectRoot -BuildOutput $OutputPath -Force
-    . Set-BuildVariable -Path (Split-Path $PSScriptRoot -Parent) -Scope Script
-
     Write-Verbose "Build system details:`n$(Get-Variable 'BH*' | Out-String)"
 
     if (-not (Test-Path $ArtifactPath)) {
@@ -135,7 +135,7 @@ task RunTests Init, {
     $testResults | ConvertTo-Json -Depth 5 | Out-File $PesterJsonResultFile -Force
 
     # If running in a CI environment, publish tests results here
-    if ($BHBuildEnvironment -eq 'AppVeyor') {
+    if ($BHBuildSystem -eq 'AppVeyor') {
         Write-Verbose "Publishing Pester results"
         Add-TestResultToAppveyor $PesterXmlResultFile
     }
