@@ -4,14 +4,16 @@
 # Customize these properties and tasks for your module.
 ###############################################################################
 
-# These variables are already available:
+# BuildHelpers makes these variables available:
 #
-# $ProjectRoot - Root directory of the project workspace
-# $ProjectName - Name of this project. Should be the same as the module name.
-
-# Source directory for the module files
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$ModuleRoot = "$ProjectRoot\src"
+# BHBranchName          - Name of the Git branch being built
+# BHBuildNumber         - Build number according to CI system
+# BHBuildSystem         - Build system in use (ex. AppVeyor, VSTS, etc.)
+# BHCommitMessage       - Git commit message
+# BHModulePath          - Path to the root of the module. Usually either "$BHProjectPath\$BHProjectName" or "$BHProjectPath\src"
+# BHProjectName         - Name of the project, according to either directory name or CI project name
+# BHProjectPath         - Path to the root of the project
+# BHPSModuleManifest    - Path to the module manifest (.psd1) file
 
 # Source paths in the project directory which need to be compiled
 $FoldersToCompile = @(
@@ -32,7 +34,7 @@ Set-StrictMode -Version Latest
 # Directory where build artifacts will be placed, including the "compiled" module and report files.
 # Note - if you change this, you may want to change the path in the .gitignore file as well.
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$ArtifactPath = "$ProjectRoot\artifacts"
+$ArtifactPath = "$BHProjectPath\artifacts"
 
 # Path(s) where the module will be installed when running the Install task.
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
@@ -56,7 +58,7 @@ $EnableAnalyze = $true
 
 # Root directory where tests are found
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$TestPath = "$ProjectRoot\test"
+$TestPath = "$BHProjectPath\test"
 
 # Pester output file, in NUnitXml format
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
@@ -91,8 +93,7 @@ $EnableBuildHelp = $true
 # Note that these repos must already exist on the system - this script
 # will not create them.
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$PublishRepos = @(
-)
+$PublishRepos = @()
 
 ########################################################################
 
