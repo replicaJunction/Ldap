@@ -7,8 +7,8 @@
 # This is an Invoke-Build build script.
 # Version 1.5.9
 
-$ProjectRoot = Split-Path $PSScriptRoot -Parent
-$ProjectName = Split-Path $ProjectRoot -Leaf
+# $ProjectRoot = Split-Path $PSScriptRoot -Parent
+# $ProjectName = Split-Path $ProjectRoot -Leaf
 
 task . Init, Analyze, Test, Build
 
@@ -29,7 +29,7 @@ if (-not (Test-Path $libFile)) {
 # Init other variables based on Settings
 
 # Path where the compiled module will be placed
-$OutputPath = "$ArtifactPath\$ProjectName"
+$OutputPath = "$ArtifactPath\$BHProjectName"
 
 ########################################################################
 
@@ -48,7 +48,7 @@ task InstallDependencies {
 task Init {
     # https://github.com/RamblingCookieMonster/BuildHelpers/issues/10
     # Set-BuildEnvironment -Path $ProjectRoot -BuildOutput $OutputPath -Force
-    . Set-BuildVariable -Path $ProjectRoot -Scope Script
+    . Set-BuildVariable -Path $BHProjectPath -Scope Script
 
     Write-Verbose "Build system details:`n$(Get-Variable 'BH*' | Out-String)"
 
@@ -77,7 +77,7 @@ task Analyze Init, {
     $scriptAnalyzerParams = @{
         Path     = "$ModuleRoot"
         Recurse  = $true
-        Settings = "$ProjectRoot\PSScriptAnalyzerSettings.psd1"
+        Settings = "$BHProjectPath\PSScriptAnalyzerSettings.psd1"
         Verbose  = $false
     }
 
@@ -199,7 +199,7 @@ task CopyFiles Init, Clean, {
     # Copy items to release folder
     # Get-ChildItem $ModuleRoot | Copy-Item -Destination $OutputPath -Recurse -Force
 
-    Copy-Item -Path (Join-Path $ModuleRoot "$ProjectName.psd1") -Destination $OutputPath -Force
+    Copy-Item -Path (Join-Path $ModuleRoot "$BHProjectName.psd1") -Destination $OutputPath -Force
     foreach ($f in $ExtraFilesToCopy) {
         Write-Verbose "Copying file [[ $f ]]"
         Copy-Item -Path (Join-Path $ModuleRoot $f) -Destination $OutputPath -Force
@@ -208,7 +208,7 @@ task CopyFiles Init, Clean, {
     $splat = @{
         ModuleSource       = $ModuleRoot
         Directory          = $FoldersToCompile
-        OutputFile         = Join-Path -Path $OutputPath -ChildPath "$ProjectName.psm1"
+        OutputFile         = Join-Path -Path $OutputPath -ChildPath "$BHProjectName.psm1"
         ExtraModuleContent = $ExtraModuleContent
         Verbose            = $VerbosePreference
     }
@@ -217,7 +217,7 @@ task CopyFiles Init, Clean, {
 }
 
 task UpdateManifestFunctions Init, CopyFiles, {
-    $outputManifestFile = Join-Path $OutputPath "$ProjectName.psd1"
+    $outputManifestFile = Join-Path $OutputPath "$BHProjectName.psd1"
 
     # Load the version of the module from the working directory, not the compiled one
     # in the artifacts dir, because the compiled one no longer knows what's a public
@@ -234,7 +234,7 @@ task CommitNewManifest {
         return
     }
 
-    git add (Join-Path $ModuleRoot "$ProjectName.psd1")
+    git add (Join-Path $ModuleRoot "$BHProjectName.psd1")
     git commit --amend --no-edit --quiet
 }
 
@@ -245,10 +245,10 @@ task CommitNewManifest {
 ########################################################################
 
 task CreateHelp {
-    Import-Module -Name "$ModuleRoot\$ProjectName.psd1" -Force
+    Import-Module -Name "$ModuleRoot\$BHProjectName.psd1" -Force
     $splat = @{
-        Module         = $ProjectName
-        OutputFolder   = "$ProjectRoot\docs\en-US"
+        Module         = $BHProjectName
+        OutputFolder   = "$BHProjectPath\docs\en-US"
         Locale         = "en-US"
         WithModulePage = $true
         Force          = $true
@@ -263,12 +263,12 @@ task BuildHelp Init, Build, {
         return
     }
 
-    Import-Module -Name "$OutputPath\$ProjectName.psd1"
-    $languages = Get-ChildItem "$ProjectRoot\docs" | Select-Object -ExpandProperty Name
+    Import-Module -Name "$OutputPath\$BHProjectName.psd1"
+    $languages = Get-ChildItem "$BHProjectPath\docs" | Select-Object -ExpandProperty Name
     foreach ($lang in $languages) {
-        Update-MarkdownHelp -Path "$ProjectRoot\docs\$lang" | Out-Null
+        Update-MarkdownHelp -Path "$BHProjectPath\docs\$lang" | Out-Null
         Write-Verbose "Generating help for language [[ $lang ]]"
-        New-ExternalHelp -Path "$ProjectRoot\docs\$lang" -OutputPath "$OutputPath\$lang" -Force | Out-Null
+        New-ExternalHelp -Path "$BHProjectPath\docs\$lang" -OutputPath "$OutputPath\$lang" -Force | Out-Null
     }
 }
 
@@ -280,7 +280,7 @@ task BuildHelp Init, Build, {
 
 task Install Init, Analyze, Test, Build, BuildHelp, {
     foreach ($path in $InstallPaths) {
-        $thisModulePath = Join-Path -Path $path -ChildPath $ProjectName
+        $thisModulePath = Join-Path -Path $path -ChildPath $BHProjectName
         if (Test-Path $thisModulePath) {
             Remove-Item -Path $thisModulePath -Recurse -Force
         }
