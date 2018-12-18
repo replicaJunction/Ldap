@@ -10,6 +10,8 @@
 # $ProjectRoot = Split-Path $PSScriptRoot -Parent
 # $ProjectName = Split-Path $ProjectRoot -Leaf
 
+Set-StrictMode -Version Latest
+
 task . Init, Analyze, Test, Build
 
 # Load Settings file
@@ -75,7 +77,7 @@ task Analyze Init, {
     }
 
     $scriptAnalyzerParams = @{
-        Path     = "$ModuleRoot"
+        Path     = "$BHModulePath"
         Recurse  = $true
         Settings = "$BHProjectPath\PSScriptAnalyzerSettings.psd1"
         Verbose  = $false
@@ -125,7 +127,7 @@ task RunTests Init, {
     }
 
     if ($CodeCoverageMinimum -and $CodeCoverageMinimum -gt 0) {
-        $pesterParams['CodeCoverage'] = @(Get-ChildItem -Path $ModuleRoot -Filter '*.ps1' -Recurse | Select-Object -ExpandProperty FullName)
+        $pesterParams['CodeCoverage'] = @(Get-ChildItem -Path $BHModulePath -Filter '*.ps1' -Recurse | Select-Object -ExpandProperty FullName)
     }
 
     Write-Verbose "Parameters for Invoke-Pester:`n$($pesterParams | Out-String)"
@@ -197,16 +199,16 @@ task UpdateManifestVersion Init, {
 
 task CopyFiles Init, Clean, {
     # Copy items to release folder
-    # Get-ChildItem $ModuleRoot | Copy-Item -Destination $OutputPath -Recurse -Force
+    # Get-ChildItem $BHModulePath | Copy-Item -Destination $OutputPath -Recurse -Force
 
-    Copy-Item -Path (Join-Path $ModuleRoot "$BHProjectName.psd1") -Destination $OutputPath -Force
+    Copy-Item -Path (Join-Path $BHModulePath "$BHProjectName.psd1") -Destination $OutputPath -Force
     foreach ($f in $ExtraFilesToCopy) {
         Write-Verbose "Copying file [[ $f ]]"
-        Copy-Item -Path (Join-Path $ModuleRoot $f) -Destination $OutputPath -Force
+        Copy-Item -Path (Join-Path $BHModulePath $f) -Destination $OutputPath -Force
     }
 
     $splat = @{
-        ModuleSource       = $ModuleRoot
+        ModuleSource       = $BHModulePath
         Directory          = $FoldersToCompile
         OutputFile         = Join-Path -Path $OutputPath -ChildPath "$BHProjectName.psm1"
         ExtraModuleContent = $ExtraModuleContent
@@ -234,7 +236,7 @@ task CommitNewManifest {
         return
     }
 
-    git add (Join-Path $ModuleRoot "$BHProjectName.psd1")
+    git add (Join-Path $BHModulePath "$BHProjectName.psd1")
     git commit --amend --no-edit --quiet
 }
 
@@ -245,7 +247,7 @@ task CommitNewManifest {
 ########################################################################
 
 task CreateHelp {
-    Import-Module -Name "$ModuleRoot\$BHProjectName.psd1" -Force
+    Import-Module -Name "$BHPSModuleManifest" -Force
     $splat = @{
         Module         = $BHProjectName
         OutputFolder   = "$BHProjectPath\docs\en-US"
