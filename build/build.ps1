@@ -48,7 +48,7 @@ task InstallDependencies {
 task Init {
     # https://github.com/RamblingCookieMonster/BuildHelpers/issues/10
     # Set-BuildEnvironment -Path $ProjectRoot -BuildOutput $OutputPath -Force
-    . Set-BuildVariable -Path $BHProjectPath -Scope Script
+    . Set-BuildVariable -Path (Split-Path $PSScriptRoot -Parent) -Scope Script
 
     Write-Verbose "Build system details:`n$(Get-Variable 'BH*' | Out-String)"
 
