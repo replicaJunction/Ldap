@@ -184,7 +184,7 @@ task UpdateManifestVersion Init, {
 
     if ($BHBuildNumber -gt 0) {
         Write-Verbose "Using build number $BHBuildNumber from CI"
-        $script:BuildNumber = $BuildNumber
+        $script:BuildNumber = $BHBuildNumber
     }
     else {
         $script:BuildNumber = $ModuleVersion.Revision + 1
