@@ -35,3 +35,9 @@ steps:
     testRunner: 'NUnit'
     testResultsFiles: '**/artifacts/PesterResults.xml'
   displayName: 'Publish Test Results'
+
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=vsts&tabs=yaml
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'module'
+    targetPath: 'artifacts/Ldap'
