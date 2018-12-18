@@ -1,0 +1,43 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+resources:
+- repo: self
+  clean: true
+
+trigger:
+- master
+
+pool:
+  vmImage: 'win1803'
+
+steps:
+- powershell: Install-Module PSDepend -Scope CurrentUser -Force
+  displayName: 'Install PSDepend'
+  name: install_psdepend
+  workingDirectory: $(build.sourcesDirectory)
+
+- powershell: Invoke-PSDepend -Path "build/Requirements.psd1" -Force
+  displayName: 'Install other pre-requisites using PSDepend'
+  name: invoke_psdepend
+  workingDirectory: $(build.sourcesDirectory)
+
+- powershell: Invoke-Build "build/build.ps1" -Task . -Verbose
+  displayName: 'Run build script'
+  name: run_build
+  workingDirectory: $(build.sourcesDirectory)
+
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/test/publish-test-results?view=vsts&tabs=yaml
+- task: PublishTestResults@2
+  inputs:
+    testRunner: 'NUnit'
+    testResultsFiles: '**/artifacts/PesterResults.xml'
+  displayName: 'Publish Test Results'
+
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=vsts&tabs=yaml
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'module'
+    targetPath: 'artifacts/Ldap'

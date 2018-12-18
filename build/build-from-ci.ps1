@@ -17,5 +17,5 @@ catch {
 }
 
 Invoke-PSDepend -Path "$PSScriptRoot\Requirements.psd1" -Install -Force
-Invoke-Build -File "$PSScriptRoot\UsbRemovable.build.ps1" -Task .
+Invoke-Build -File "$PSScriptRoot\build.ps1" -Task .
 
