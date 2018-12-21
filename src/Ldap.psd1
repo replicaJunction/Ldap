@@ -12,7 +12,7 @@
     RootModule         = 'Ldap.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '0.1.0.18'
+    ModuleVersion      = '0.1.1.19'
 
     # ID used to uniquely identify this module
     GUID               = 'b1d816ce-57bd-49a1-8c90-11f5f20195b5'
@@ -120,6 +120,7 @@
     # DefaultCommandPrefix = ''
 
 }
+
 
 
 
