@@ -93,7 +93,7 @@ function Get-ApiKey {
         }
     }
 
-    if (-not $FilePath)
+    if (-not $FilePath) {
         $FilePath = Join-Path (Split-Path $PSScriptRoot -Parent) 'artifacts/apiKey.json'
     }
 
