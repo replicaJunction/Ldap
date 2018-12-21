@@ -93,7 +93,13 @@ $EnableBuildHelp = $true
 # Note that these repos must already exist on the system - this script
 # will not create them.
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$PublishRepos = @()
+$PublishRepos = @(
+    @{
+        Repository  = 'PSGallery'
+        NuGetApiKey = $true
+        Branch      = 'master'
+    }
+)
 
 ########################################################################
 
