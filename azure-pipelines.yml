@@ -7,6 +7,8 @@ resources:
 - repo: self
   clean: true
 
+name: $(Date:yyyyMMdd)$(Rev:.rr)
+
 trigger:
 - master
 
