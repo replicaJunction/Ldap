@@ -18,10 +18,6 @@ steps:
   inputs:
       secureFile: 'apiKey.json'
 
-- powershell: Copy-File "$env:DOWNLOADSECUREFILE_SECUREFILEPATH" "$(Build.SourcesDirectory)/artifacts/apiKey.json"
-  displayName: 'Copy API key to workspace'
-  name: copy_apiKey
-
 - powershell: Install-Module PSDepend -Scope CurrentUser -Force
   displayName: 'Install PSDepend'
   name: install_psdepend
