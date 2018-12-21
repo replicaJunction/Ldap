@@ -1,5 +1,6 @@
 function Get-LdapConnection {
     [CmdletBinding()]
+    [OutputType([System.DirectoryServices.Protocols.LdapDirectoryIdentifier])]
     param(
         [Parameter(Mandatory)]
         [String] $Server,
