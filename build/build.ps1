@@ -12,7 +12,8 @@
 
 Set-StrictMode -Version Latest
 
-task . Init, Analyze, Test, Build
+task . Init, Analyze, Test, Build, Install
+task AzureDevOps Init, Analyze, Test, Build, Publish
 
 # https://github.com/RamblingCookieMonster/BuildHelpers/issues/10
 # Set-BuildEnvironment -Path (Split-Path $PSScriptRoot -Parent)
@@ -302,7 +303,28 @@ task Publish Init, Analyze, Test, Build, BuildHelp, {
 
     foreach ($repo in $PublishRepos) {
         try {
-            Publish-Module -Path $OutputPath -Repository $repo -ErrorAction Stop
+            $repoName = $repo.Repository
+            $splat = @{
+                repository  = $repoName
+                Path        = $OutputPath
+                ErrorAction = 'Stop'
+            }
+
+            if ($repo.Branch -and $BHBranchName -ne $repo.Branch) {
+                Write-Warning "Repository $repoName is configured to only publish branch $($repo.Branch), and this build is for branch $BHBranchName. Module will not be published."
+                return
+            }
+
+            # Display the parameters before we add the API key, for security
+            Write-Verbose "Publishing module to repository $repoName with params:`n$($splat | Out-String)"
+
+            if ($repo.NuGetApiKey) {
+                Write-Verbose "Reading key for repo $repoName"
+                $repoKey = Get-ApiKey -ErrorAction Stop
+                $splat['NuGetApiKey'] = $repoKey
+            }
+
+            Publish-Module @splat
         }
         catch {
             Write-Error "Failed to publish to repo ${repo}: $_"
