@@ -188,7 +188,7 @@ task UpdateManifestVersion Init, {
         $script:BuildNumber = $BHBuildNumber
     }
     else {
-        $script:BuildNumber = Get-Date -Format 'yyyyMMddHHmm'
+        $script:BuildNumber = Get-Date -Format 'yyyyMMddHH'
         Write-Verbose "Using build number $BuildNumber from existing manifest"
     }
 
