@@ -170,7 +170,7 @@ task ConfirmTestsPassed Init, RunTests, {
 #region Build
 ########################################################################
 
-task Build Init, UpdateManifestVersion, CopyFiles, UpdateManifestFunctions, CommitNewManifest
+task Build Init, UpdateManifestVersion, CopyFiles, UpdateManifestFunctions# , CommitNewManifest
 
 task UpdateManifestVersion Init, {
     # Get manifest contents and look for the current build number
