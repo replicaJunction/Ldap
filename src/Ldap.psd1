@@ -12,7 +12,7 @@
     RootModule         = 'Ldap.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '0.1.0.18'
+    ModuleVersion      = '0.1.0.16'
 
     # ID used to uniquely identify this module
     GUID               = 'b1d816ce-57bd-49a1-8c90-11f5f20195b5'
@@ -24,13 +24,13 @@
     CompanyName        = 'Unknown'
 
     # Copyright statement for this module
-    Copyright          = '(c) 2017 Joshua T. All rights reserved.'
+    Copyright          = '(c) 2018 Joshua T. All rights reserved.'
 
     # Description of the functionality provided by this module
-    # Description = ''
+    Description        = 'PowerShell module for working with non-AD LDAP environments'
 
     # Minimum version of the Windows PowerShell engine required by this module
-    # PowerShellVersion = ''
+    PowerShellVersion = '3.0'
 
     # Name of the Windows PowerShell host required by this module
     # PowerShellHostName = ''
@@ -92,13 +92,16 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            # Tags = @()
+            Tags = @(
+                'powershell',
+                'ldap'
+            )
 
             # A URL to the license for this module.
-            # LicenseUri = ''
+            LicenseUri = 'https://github.com/replicaJunction/Ldap/blob/master/LICENSE'
 
             # A URL to the main website for this project.
-            # ProjectUri = ''
+            ProjectUri = 'https://github.com/replicaJunction/Ldap'
 
             # A URL to an icon representing this module.
             # IconUri = ''
@@ -117,20 +120,4 @@
     # DefaultCommandPrefix = ''
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
