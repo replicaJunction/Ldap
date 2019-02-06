@@ -306,7 +306,7 @@ task Publish Init, Test, Analyze,  Build, BuildHelp, {
     Write-Verbose "PowerShellGet version: $($psGetModule.Version)"
 
     # Make sure NuGet.exe is available
-    Install-PackageProvider -Name NuGet -Scope CurrentUser -Force
+    Get-PackageProvider -Name NuGet -ForceBootstrap
 
     foreach ($repo in $PublishRepos) {
         try {
