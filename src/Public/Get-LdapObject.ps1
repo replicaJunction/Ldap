@@ -28,6 +28,9 @@ function Get-LdapObject {
         [ValidateSet('String', 'ByteArray')]
         [String] $AttributeFormat = 'String',
 
+        [Parameter()]
+        [uint32] $TimeoutSeconds,
+
         # Do not attempt to clean up the LDAP output - provide the output as-is
         [Parameter()]
         [Switch] $Raw
@@ -63,7 +66,13 @@ function Get-LdapObject {
         }
 
         Write-Debug "[Get-LdapObject] Sending LDAP request"
-        $response = $LdapConnection.SendRequest($request)
+        if ($TimeoutSeconds) {
+            $timeout = [System.TimeSpan]::FromSeconds($TimeoutSeconds)
+            $response = $LdapConnection.SendRequest($request, $timeout)
+        }
+        else {
+            $response = $LdapConnection.SendRequest($request)
+        }
 
         if (-not $response) {
             Write-Verbose "No response was returned from the LDAP server."
