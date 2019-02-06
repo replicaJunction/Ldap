@@ -324,6 +324,8 @@ task Publish Init, Test, Analyze,  Build, BuildHelp, {
                 $splat['NuGetApiKey'] = $repoKey
             }
 
+            # Make sure NuGet.exe is available
+            Install-PackageProvider -Name NuGet -Scope CurrentUser -ForceBootstrap
             Publish-Module @splat
         }
         catch {
