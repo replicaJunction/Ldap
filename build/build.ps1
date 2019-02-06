@@ -325,7 +325,7 @@ task Publish Init, Test, Analyze,  Build, BuildHelp, {
             }
 
             # Make sure NuGet.exe is available
-            Install-PackageProvider -Name NuGet -Scope CurrentUser -ForceBootstrap
+            Install-PackageProvider -Name NuGet -Scope CurrentUser -Force
             Publish-Module @splat
         }
         catch {
