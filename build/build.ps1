@@ -301,6 +301,12 @@ task Publish Init, Test, Analyze,  Build, BuildHelp, {
         Write-Verbose "To publish the module, define one or more repositories here."
     }
 
+    Write-Verbose "Preparing to publish"
+    Write-Verbose "PowerShellGet version: $(Get-Module PowerShellGet | Select-Object -ExpandProperty Version)"
+
+    # Make sure NuGet.exe is available
+    Install-PackageProvider -Name NuGet -Scope CurrentUser -Force
+
     foreach ($repo in $PublishRepos) {
         try {
             $repoName = $repo.Repository
@@ -324,8 +330,6 @@ task Publish Init, Test, Analyze,  Build, BuildHelp, {
                 $splat['NuGetApiKey'] = $repoKey
             }
 
-            # Make sure NuGet.exe is available
-            Install-PackageProvider -Name NuGet -Scope CurrentUser -Force
             Publish-Module @splat
         }
         catch {
