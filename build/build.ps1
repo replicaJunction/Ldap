@@ -302,7 +302,8 @@ task Publish Init, Test, Analyze,  Build, BuildHelp, {
     }
 
     Write-Verbose "Preparing to publish"
-    Write-Verbose "PowerShellGet version: $(Get-Module PowerShellGet | Select-Object -ExpandProperty Version)"
+    $psGetModule = Import-Module PowerShellGet -PassThru -ErrorAction Stop
+    Write-Verbose "PowerShellGet version: $($psGetModule.Version)"
 
     # Make sure NuGet.exe is available
     Install-PackageProvider -Name NuGet -Scope CurrentUser -Force
