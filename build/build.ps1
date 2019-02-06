@@ -5,15 +5,15 @@
 ##############################################################################
 
 # This is an Invoke-Build build script.
-# Version 1.6.0
+# Version 1.6.1
 
 # $ProjectRoot = Split-Path $PSScriptRoot -Parent
 # $ProjectName = Split-Path $ProjectRoot -Leaf
 
 Set-StrictMode -Version Latest
 
-task . Init, Analyze, Test, Build, Install
-task AzureDevOps Init, Analyze, Test, Build, Publish
+task . Init, Test, Analyze, Build, Install
+task AzureDevOps Init, Test, Analyze,  Build, Publish
 
 # https://github.com/RamblingCookieMonster/BuildHelpers/issues/10
 # Set-BuildEnvironment -Path (Split-Path $PSScriptRoot -Parent)
@@ -281,7 +281,7 @@ task BuildHelp Init, Build, {
 #region Install / Publish
 ########################################################################
 
-task Install Init, Analyze, Test, Build, BuildHelp, {
+task Install Init, Test, Analyze,  Build, BuildHelp, {
     foreach ($path in $InstallPaths) {
         $thisModulePath = Join-Path -Path $path -ChildPath $BHProjectName
         if (Test-Path $thisModulePath) {
@@ -295,7 +295,7 @@ task Install Init, Analyze, Test, Build, BuildHelp, {
     }
 }
 
-task Publish Init, Analyze, Test, Build, BuildHelp, {
+task Publish Init, Test, Analyze,  Build, BuildHelp, {
     if (-not $PublishRepos) {
         Write-Verbose "No repositories were defined in the `$PublishRepos variable in settings file [[ $settingsFile ]]."
         Write-Verbose "To publish the module, define one or more repositories here."
@@ -305,7 +305,7 @@ task Publish Init, Analyze, Test, Build, BuildHelp, {
         try {
             $repoName = $repo.Repository
             $splat = @{
-                repository  = $repoName
+                Repository  = $repoName
                 Path        = $OutputPath
                 ErrorAction = 'Stop'
             }
@@ -327,7 +327,7 @@ task Publish Init, Analyze, Test, Build, BuildHelp, {
             Publish-Module @splat
         }
         catch {
-            Write-Error "Failed to publish to repo ${repo}: $_"
+            Write-Error "Failed to publish to repo ${repoName}: $_"
         }
     }
 }
