@@ -7,7 +7,9 @@
 
 @{
     BuildHelpers     = @{
-        Version = 'latest'
+        # Latest version has a bug with VSTS
+        # https://github.com/RamblingCookieMonster/BuildHelpers/issues/100
+        Version = '1.1.4'
         Target  = 'CurrentUser'
     }
     InvokeBuild      = @{
