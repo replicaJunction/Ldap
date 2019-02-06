@@ -28,4 +28,8 @@
         Version = 'latest'
         Target  = 'CurrentUser'
     }
+    PowerShellGet    = @{
+        Version = 'latest'
+        Target  = 'CurrentUser'
+    }
 }
