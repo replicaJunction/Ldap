@@ -292,7 +292,7 @@ Task Publish -If { $PublishRepos.Count } Init, Build, Test, Analyze, BuildHelp, 
                 if ($repo.NuGetApiKey) {
                     $needsApiKey = $true
                     Write-Verbose "Loading NuGet API key from variable $($repo.NuGetApiKey)"
-                    $apiKey = Get-Item -Path "env:\$($repo.NuGetApiKey)" | Select-Item -ExpandProperty Value
+                    $apiKey = Get-Item -Path "env:\$($repo.NuGetApiKey)" | Select-Object -ExpandProperty Value
                     if (-not $apiKey) {
                         throw "Failed to load NuGet API key from variable $($repo.NuGetApiKey)"
                     }
