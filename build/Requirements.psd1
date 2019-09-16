@@ -16,6 +16,10 @@
         Version = 'latest'
         Target  = 'CurrentUser'
     }
+    Configuration    = @{
+        Version = 'latest'
+        Target  = 'CurrentUser'
+    }
     Pester           = @{
         Version = 'latest'
         Target  = 'CurrentUser'
