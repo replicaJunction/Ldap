@@ -118,7 +118,27 @@ Task UpdateVersion Init, CopyFiles, {
         return
     }
 
-    Step-ModuleVersion -Path $outputManifestFile -By 'Build'
+    $existingVersion = [Version] (Get-Metadata -Path $outputManifestFile)
+
+    # If this repository doesn't use the fourth digit of a version number, then skip this step
+    if ($existingVersion.Revision -eq -1) {
+        Write-Verbose "Project version [$existingVersion] does not include a revision number, so it will not be updated."
+        return
+    }
+
+    # If our build number has a dot in it, just remove it
+    # For example, a build like 20190916.6 should become 201909166
+    [int] $buildNumberInt = "$BHBuildNumber".Replace('.', '')
+
+    $newVersion = New-Object -TypeName 'System.Version' -ArgumentList @(
+        $existingVersion.Major
+        $existingVersion.Minor
+        $existingVersion.Build
+        $buildNumberInt
+    )
+
+    Update-Metadata -Path $outputManifestFile -PropertyName 'ModuleVersion' -Value $newVersion
+    Write-Verbose "Updated module version from $existingVersion to $newVersion"
 }
 
 ##############################################################################
