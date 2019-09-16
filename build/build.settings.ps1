@@ -109,15 +109,25 @@ $DocumentationPath = "$BHProjectPath\docs"
 #
 # @{
 #     Repository  = 'PSGallery'
-#     NuGetApiKey = 'env:NuGetApiKey'
+#     NuGetApiKey = 'NuGetApiKey'
 #     Branch      = 'master'
 # }
+#
+# Repository - the name of a PSRepository defined on the system
+# * Use Get-PSRepository to view the repositories on the current system
+# * Use Register-PSRepository to add one
+#
+# NuGetApiKey - the name of an environment variable which contains the API key for NuGet
+# * Most CI environments have methods of injecting secrets into the CI environment.
+# * This must be an environment variable - i.e. use 'myVar' to refer to '$env:myVar'
+#
+# Branch - the branch that should be published
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $PublishRepos = @(
     @{
         Repository  = 'PSGallery'
-        NuGetApiKey = 'env:PSGalleryApiKey'
+        NuGetApiKey = 'PSGalleryApiKey'
         Branch      = 'master'
     }
 )
