@@ -20,7 +20,7 @@ steps:
   displayName: 'Build and publish module'
   inputs:
     filePath: 'build/build.ps1'
-    arguments: '-Task Publish -Verbose'
+    arguments: '-Publish -Verbose'
   env:
     PSGalleryApiKey: $($PSGalleryApiKey)
 

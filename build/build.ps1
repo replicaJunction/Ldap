@@ -6,6 +6,10 @@ param(
 
     [Parameter()]
     [Switch] $Clean
+    ,
+
+    [Parameter()]
+    [Switch] $Publish
 )
 
 if ($SkipDependencyCheck) {
