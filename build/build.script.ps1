@@ -339,7 +339,7 @@ Task Publish -If { $PublishRepos.Count } Init, Build, Test, Analyze, BuildHelp, 
             $currentVersion = [Version] (Get-Metadata -Path $outputManifestFile)
             Write-Verbose "Checking repository $repoName to see if version $currentVersion can be published"
 
-            $nextAvailableVersion = Get-NextNugePackageVersion -Name $BHProjectName -PackageSourceUrl $repoSourceUrl
+            $nextAvailableVersion = Get-NextNugetPackageVersion -Name $BHProjectName -PackageSourceUrl $repoSourceUrl
             if ($currentVersion -le $nextAvailableVersion) {
                 throw "Cannot publish module version [$currentVersion] because the next available version to publish is [$nextAvailableVersion]"
             }
