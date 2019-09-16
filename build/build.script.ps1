@@ -337,7 +337,7 @@ Task Publish -If { $PublishRepos.Count } Init, Build, Test, Analyze, BuildHelp, 
             $repoSourceUrl = Get-PSRepository -Name $repoName | Select-Object -ExpandProperty 'SourceLocation'
             $outputManifestFile = Join-Path -Path $ArtifactModulePath -ChildPath "$BHProjectName.psd1"
             $currentVersion = [Version] (Get-Metadata -Path $outputManifestFile)
-            Write-Verbose "Checking repository $repoName to see if version $moduleVersion can be published"
+            Write-Verbose "Checking repository $repoName to see if version $currentVersion can be published"
 
             $nextAvailableVersion = Get-NextNugePackageVersion -Name $BHProjectName -PackageSourceUrl $repoSourceUrl
             if ($currentVersion -le $nextAvailableVersion) {
