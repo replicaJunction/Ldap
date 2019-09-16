@@ -343,6 +343,7 @@ Task Publish -If { $PublishRepos.Count } Init, Build, Test, Analyze, BuildHelp, 
             if ($currentVersion -le $nextAvailableVersion) {
                 throw "Cannot publish module version [$currentVersion] because the next available version to publish is [$nextAvailableVersion]"
             }
+            Write-Verbose "Module version [$currentVersion] can be published (next available version: [$nextAvailableVersion])"
 
             $splat = @{
                 Repository  = $repoName
