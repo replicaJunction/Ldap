@@ -356,6 +356,7 @@ Task Publish -If { $PublishRepos.Count } Init, Build, Test, Analyze, BuildHelp, 
 
             if ($needsApiKey) {
                 $splat['NuGetApiKey'] = $apiKey
+                Write-Verbose "Using API key ending in $($apiKey.Substring($apiKey.Length - 4))"
             }
 
             Publish-Module @splat
