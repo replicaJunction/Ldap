@@ -45,5 +45,9 @@ else {
     $tasks = @('.')
 }
 
+if ($Publish) {
+    $tasks = $tasks + 'Publish'
+}
+
 Write-Verbose "Transferring control to Invoke-Build"
 Invoke-Build -File "$PSScriptRoot\build.script.ps1" -Task $tasks -Verbose:$VerbosePreference
