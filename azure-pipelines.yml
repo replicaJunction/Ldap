@@ -22,7 +22,7 @@ steps:
     filePath: 'build/build.ps1'
     arguments: '-Publish -Verbose'
   env:
-    PSGalleryApiKey: $($PSGalleryApiKey)
+    PSGalleryApiKey: $(PSGalleryApiKey)
 
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/test/publish-test-results?view=vsts&tabs=yaml
 - task: PublishTestResults@2
