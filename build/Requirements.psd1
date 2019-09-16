@@ -7,8 +7,6 @@
 
 @{
     BuildHelpers     = @{
-        # Latest version has a bug with VSTS
-        # https://github.com/RamblingCookieMonster/BuildHelpers/issues/100
         Version = 'latest'
         Target  = 'CurrentUser'
     }
