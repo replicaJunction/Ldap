@@ -18,7 +18,7 @@ function Get-LdapConnection {
         [Switch] $IgnoreCertificate,
 
         [Parameter()]
-        [PSCredential] $Credential,
+        [PSCredential] [System.Management.Automation.Credential()] $Credential,
 
         [Parameter()]
         [System.DirectoryServices.Protocols.AuthType] $AuthType
