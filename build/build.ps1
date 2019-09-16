@@ -35,7 +35,7 @@ else {
     }
 
     Write-Verbose "Checking requirements with PSDepend"
-    Invoke-PSDepend -Path "$PSScriptRoot\Requirements.psd1" -Install $true -Force
+    Invoke-PSDepend -Path "$PSScriptRoot\Requirements.psd1" -Install -Force
 }
 
 if ($Clean) {
