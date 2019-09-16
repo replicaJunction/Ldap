@@ -4,6 +4,8 @@
 # Customize these properties and tasks for your module.
 ###############################################################################
 
+# Settings for build script version 2.0.1
+
 # BuildHelpers makes these variables available:
 #
 # BHBranchName          - Name of the Git branch being built
@@ -15,32 +17,22 @@
 # BHProjectPath         - Path to the root of the project
 # BHPSModuleManifest    - Path to the module manifest (.psd1) file
 
-# Source paths in the project directory which need to be compiled
-$FoldersToCompile = @(
-    'Public'
-    'Private'
-)
-
 # Additional files which should be copied - config files, etc.
-$ExtraFilesToCopy = @(
-    # 'config.json'
-)
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$ExtraFilesToCopy = @()
 
-# # Any additional logic that needs to be in the module file
-$ExtraModuleContent = @'
-Set-StrictMode -Version Latest
-'@
+# Any additional logic that needs to be in the module file
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$ExtraModuleContent = 'Set-StrictMode -Version Latest'
 
 # Directory where build artifacts will be placed, including the "compiled" module and report files.
 # Note - if you change this, you may want to change the path in the .gitignore file as well.
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$ArtifactPath = "$BHProjectPath\artifacts"
+$ArtifactPath = "$BHProjectPath\Artifacts"
 
 # Path(s) where the module will be installed when running the Install task.
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$InstallPaths = @(
-    "$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
-)
+$InstallPaths = @()
 
 
 ####################
@@ -51,6 +43,10 @@ $InstallPaths = @(
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $EnableAnalyze = $true
 
+# Path to a custom .psd1 file for script analyzer settings. Set to $null to use default settings.
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$ScriptAnalysisSettingsFile = $null
+
 
 ####################
 # Pester settings
@@ -59,6 +55,12 @@ $EnableAnalyze = $true
 # Root directory where tests are found
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $TestPath = "$BHProjectPath\test"
+
+# Exclude any tests with these tags when running
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$ExcludeTag = @(
+    'Integration'
+)
 
 # Pester output file, in NUnitXml format
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
@@ -83,6 +85,10 @@ $CodeCoverageMinimum = 0.00
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $EnableBuildHelp = $true
 
+# Documentation path for the project
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$DocumentationPath = "$BHProjectPath\docs"
+
 
 #####################
 # Publish settings
@@ -92,11 +98,26 @@ $EnableBuildHelp = $true
 # If set to null or an empty array, the publish step will be skipped.
 # Note that these repos must already exist on the system - this script
 # will not create them.
+
+# There are two formats that can be used for these values:
+#
+# 1. String value
+# If a simple string is provided, it will be assumed to be the name of the repository.
+# Code will only be published on the master branch.
+#
+# 2. Hashtable
+#
+# @{
+#     Repository  = 'PSGallery'
+#     NuGetApiKey = 'env:NuGetApiKey'
+#     Branch      = 'master'
+# }
+
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $PublishRepos = @(
     @{
         Repository  = 'PSGallery'
-        NuGetApiKey = $true
+        NuGetApiKey = 'env:PSGalleryApiKey'
         Branch      = 'master'
     }
 )
@@ -106,19 +127,6 @@ $PublishRepos = @(
 # To define a code hook, use -Before or -After and specify the task
 # name. You can add a task that runs before or after any named task
 # in the build script.
-
-task DisableModuleAutoImport -Before RunTests {
-    Write-Host "Disabling module auto-import" -ForegroundColor Magenta
-    $global:PSModuleAutoLoadingPreference = 'None'
-
-    # Since we've disabled module import, we need to manually import Pester
-    Import-Module Pester
-}
-
-task EnableModuleAutoImport -After RunTests {
-    Write-Host "Re-enabling module auto-import" -ForegroundColor Magenta
-    $global:PSModuleAutoLoadingPreference = $null
-}
 
 # task PreInstall -Before Install {
 #     Write-Host 'Pre-install task!'

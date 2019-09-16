@@ -7,40 +7,29 @@ resources:
 - repo: self
   clean: true
 
-name: $(Date:yyyyMMdd)$(Hours)
+# name: $(Date:yyyyMMdd)$(Hours)
 
 trigger:
 - master
 
 pool:
-  vmImage: 'win1803'
+  vmImage: 'windows-latest'
 
 steps:
-- task: DownloadSecureFile@1
+- task: PowerShell@2
+  displayName: 'Build and publish module'
   inputs:
-      secureFile: 'apiKey.json'
-
-- powershell: Install-Module PSDepend -Scope CurrentUser -Force
-  displayName: 'Install PSDepend'
-  name: install_psdepend
-  workingDirectory: $(build.sourcesDirectory)
-
-- powershell: Invoke-PSDepend -Path "build/Requirements.psd1" -Force
-  displayName: 'Install other pre-requisites using PSDepend'
-  name: invoke_psdepend
-  workingDirectory: $(build.sourcesDirectory)
-
-- powershell: Invoke-Build "build/build.ps1" -Task AzureDevOps -Verbose
-  displayName: 'Run build script'
-  name: run_build
-  workingDirectory: $(build.sourcesDirectory)
+    filePath: 'build/build.ps1'
+    arguments: '-Task Publish -Verbose'
+  env:
+    PSGalleryApiKey: $($PSGalleryApiKey)
 
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/test/publish-test-results?view=vsts&tabs=yaml
 - task: PublishTestResults@2
+  displayName: 'Publish Test Results'
   inputs:
     testRunner: 'NUnit'
     testResultsFiles: '**/artifacts/PesterResults.xml'
-  displayName: 'Publish Test Results'
 
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=vsts&tabs=yaml
 - task: PublishPipelineArtifact@0
