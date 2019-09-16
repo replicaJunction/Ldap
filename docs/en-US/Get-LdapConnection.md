@@ -61,6 +61,8 @@ Accept wildcard characters: False
 ### -Credential
 Credentials to use to connect to LDAP. Note that in most cases, a fully-qualified name is required (such as "cn=User,ou=Example,dc=local") rather than just a common name.
 
+For more information about using credentials in PowerShell, see the help documentation on the native Get-Credential cmdlet by running "help Get-Credential".
+
 ```yaml
 Type: PSCredential
 Parameter Sets: (All)
