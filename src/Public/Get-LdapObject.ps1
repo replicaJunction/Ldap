@@ -66,13 +66,16 @@ function Get-LdapObject {
         }
 
         Write-Debug "[Get-LdapObject] Sending LDAP request"
+        $splat = @{
+            'LdapConnection' = $LdapConnection
+            'Request'        = $request
+        }
+
         if ($TimeoutSeconds) {
-            $timeout = [System.TimeSpan]::FromSeconds($TimeoutSeconds)
-            $response = $LdapConnection.SendRequest($request, $timeout)
+            $splat['Timeout'] = [System.TimeSpan]::FromSeconds($TimeoutSeconds)
         }
-        else {
-            $response = $LdapConnection.SendRequest($request)
-        }
+
+        $response = Send-LdapRequest @splat
 
         if (-not $response) {
             Write-Verbose "No response was returned from the LDAP server."
