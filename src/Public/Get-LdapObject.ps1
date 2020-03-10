@@ -29,6 +29,9 @@ function Get-LdapObject {
         [String] $AttributeFormat = 'String',
 
         [Parameter()]
+        [int] $PageSize,
+
+        [Parameter()]
         [uint32] $TimeoutSeconds,
 
         # Do not attempt to clean up the LDAP output - provide the output as-is
@@ -65,6 +68,13 @@ function Get-LdapObject {
             }
         }
 
+        # Declare this outside of the below If block to support Strict mode
+        $pageControl = $null
+        if ($PageSize) {
+            $pageControl = New-Object -TypeName System.DirectoryServices.Protocols.PageResultRequestControl -ArgumentList $PageSize
+            [void] $request.Controls.Add($pageControl)
+        }
+
         Write-Debug "[Get-LdapObject] Sending LDAP request"
         $splat = @{
             'LdapConnection' = $LdapConnection
@@ -75,40 +85,78 @@ function Get-LdapObject {
             $splat['Timeout'] = [System.TimeSpan]::FromSeconds($TimeoutSeconds)
         }
 
-        $response = Send-LdapRequest @splat
+        # Again, we need to define the variable outside the scope of the do/until loop
+        # or else Strict mode will yell at us
+        $hasMore = $false
+        do {
+            # Stop after this run unless we explicitly say otherwise
+            $hasMore = $false
 
-        if (-not $response) {
-            Write-Verbose "No response was returned from the LDAP server."
-            return
-        }
+            # Since we are sending a SearchRequest, we will get a SearchResponse back
+            [System.DirectoryServices.Protocols.SearchResponse] $response = Send-LdapRequest @splat
 
-        if ($response.ResultCode -eq 'Success') {
-            if ($Raw) {
-                Write-Output ($response.Entries)
+            if (-not $response) {
+                Write-Verbose "No response was returned from the LDAP server."
+            }
+            elseif ($response.ResultCode -ne 'Success') {
+                Write-Warning "The LDAP server returned response code $($response.ResultCode) instead of Success"
+                Write-Output $response
             }
             else {
-                # Convert results to a PSCustomObject.
-                foreach ($e in $response.Entries) {
-                    $hash = @{
-                        PSTypeName        = 'LdapObject'
-                        DistinguishedName = $e.DistinguishedName
-                        # Controls          = $e.Controls     # Not actually sure what this is
-                    }
-
-                    # Attributes are returned as an instance of the class
-                    # System.DirectoryServices.Protocols.DirectoryAttribute.
-                    # Translate that to a more PowerShell-friendly format here.
-                    foreach ($a in $e.Attributes.Keys | Sort-Object) {
-                        # Write-Debug "[Get-LdapObject] Adding type [$a]"
-                        $hash[$a] = $e.Attributes[$a].GetValues($attrType) | Expand-Collection
-                    }
-
-                    Write-Output ([PSCustomObject] $hash)
+                if ($Raw) {
+                    Write-Debug "[Get-LdapObject] -Raw was passed; outputting raw directory entries"
+                    Write-Output ($response.Entries)
                 }
-                return
+                else {
+                    # Convert results to a PSCustomObject.
+                    $response.Entries | ForEach-Object {
+                        $hash = [Ordered] @{
+                            PSTypeName        = 'LdapObject'
+                            DistinguishedName = $_.DistinguishedName
+                        }
+
+                        # Attributes are returned as an instance of the class
+                        # System.DirectoryServices.Protocols.SearchResultAttributeCollection,
+                        # which is a collection of DirctoryAttribute objects.
+                        #
+                        # DirectoryAttribute extends CollectionBase, which PowerShell can iterate
+                        # through using ForEach-Object, but PowerShell doesn't automatically
+                        # expand them the way it handles IEnumerables.
+                        #
+                        # The ForEach-Object here iterates through the values in the
+                        # DirectoryEntry and converts them to an IEnumerable instance, which is
+                        # much more PowerShell-friendly.
+
+                        foreach ($a in $_.Attributes.Keys | Sort-Object) {
+                            $hash[$a] = $_.Attributes[$a].GetValues($attrType) | ForEach-Object { $_ }
+                        }
+
+                        [PSCustomObject] $hash
+                    } | Write-Output
+                }
+
+                # If we're paging, see if we need to return another page
+                if ($PageSize) {
+                    [System.DirectoryServices.Protocols.PageResultResponseControl] $pageResult = $response.Controls |
+                        Where-Object {$_ -is [System.DirectoryServices.Protocols.PageResultResponseControl]} |
+                        Select-Object -First 1   # There should only be one, but this is defensive programming
+
+                    if (-not $pageResult) {
+                        Write-Warning "No paging controls were returned from the LDAP server. Results may be incomplete."
+                    }
+                    elseif ($pageResult.Cookie.Length -eq 0) {
+                        # Length of 0 indicates that we've returned all results
+                        Write-Debug "[Get-LdapObject] Paging cookie with length of 0 returned; completed paging"
+                    }
+                    else {
+                        # Update the page control in the request with the new paging info in the response
+                        Write-Debug "[Get-LdapObject] More paging information was provided ($($pageResult.Cookie))"
+                        $pageControl.Cookie = $pageResult.Cookie
+                        $hasMore = $true
+                    }
+                }
             }
         }
-
-        Write-Output $response
+        while ($hasMore)
     }
 }
