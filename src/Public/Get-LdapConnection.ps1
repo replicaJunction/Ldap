@@ -18,6 +18,9 @@ function Get-LdapConnection {
         [Switch] $IgnoreCertificate,
 
         [Parameter()]
+        [System.DirectoryServices.ReferralChasingOption] $ReferralChasing,
+
+        [Parameter()]
         [PSCredential] [System.Management.Automation.Credential()] $Credential,
 
         [Parameter()]
@@ -55,6 +58,10 @@ function Get-LdapConnection {
 
         if ($IgnoreCertificate) {
             $ldap.SessionOptions.VerifyServerCertificate = { $true }
+        }
+
+        if ($ReferralChasing) {
+            $ldap.SessionOptions.ReferralChasing = $ReferralChasing
         }
 
         Write-Output $ldap
