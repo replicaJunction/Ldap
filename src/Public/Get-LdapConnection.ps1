@@ -17,6 +17,11 @@ function Get-LdapConnection {
         [Parameter()]
         [Switch] $IgnoreCertificate,
 
+        # Version of the LDAP protocol to use
+        [Parameter()]
+        [Int] $ProtocolVersion,
+
+        # Specify how the LDAP library follows referrals
         [Parameter()]
         [System.DirectoryServices.ReferralChasingOption] $ReferralChasing,
 
@@ -58,6 +63,10 @@ function Get-LdapConnection {
 
         if ($IgnoreCertificate) {
             $ldap.SessionOptions.VerifyServerCertificate = { $true }
+        }
+
+        if ($ProtocolVersion) {
+            $ldap.SessionOptions.ProtocolVersion = $ProtocolVersion
         }
 
         if ($ReferralChasing) {
