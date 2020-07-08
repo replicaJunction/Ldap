@@ -40,67 +40,40 @@
         {
             "label": "Build",
             "type": "shell",
-            "command": "Invoke-Build",
-            "args": [
-                "-File",
-                "\"${workspaceRoot}\\build\\build.ps1\"",
-                "-Task",
-                "."
-            ],
+            "command": "& '${workspaceRoot}\\build\\build.ps1' -SkipDependencyCheck",
             "group": {
                 "kind": "build",
                 "isDefault": true
-            },
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared"
-            },
-            "problemMatcher": []
+            }
         },
         {
             "label": "Build (Verbose)",
             "type": "shell",
-            "command": "Invoke-Build",
-            "args": [
-                "-File",
-                "\"${workspaceRoot}\\build\\build.ps1\"",
-                "-Task",
-                ".",
-                "-Verbose"
-            ],
+            "command": "& '${workspaceRoot}\\build\\build.ps1' -SkipDependencyCheck -Verbose",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build (check and install dependencies)",
+            "type": "shell",
+            "command": "& '${workspaceRoot}\\build\\build.ps1' -Verbose",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Test",
+            "type": "shell",
+            "command": "& '${workspaceRoot}\\test\\Invoke-Test.ps1' -VSCode",
+            "group": "test",
+            "problemMatcher": "$pester",
             "presentation": {
-                "echo": true,
+                "echo": false,
                 "reveal": "always",
                 "focus": false,
-                "panel": "shared"
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Install",
-            "type": "shell",
-            "command": "Invoke-Build",
-            "args": [
-                "-File",
-                "\"${workspaceRoot}\\build\\build.ps1\"",
-                "-Task",
-                "Install"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "Publish",
-            "type": "shell",
-            "command": "Invoke-Build",
-            "args": [
-                "-File",
-                "\"${workspaceRoot}\\build\\build.ps1\"",
-                "-Task",
-                "Publish"
-            ],
-            "problemMatcher": []
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            }
         }
     ]
 }
