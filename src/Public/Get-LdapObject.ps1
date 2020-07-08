@@ -59,6 +59,8 @@ function Get-LdapObject {
             $request.DistinguishedName = $SearchBase
         }
 
+        $request.Scope = $Scope
+
         if (-not $Property -or $Property -contains '*') {
             Write-Debug "[Get-LdapObject] Returning all properties"
         }
@@ -138,7 +140,7 @@ function Get-LdapObject {
                 # If we're paging, see if we need to return another page
                 if ($PageSize) {
                     [System.DirectoryServices.Protocols.PageResultResponseControl] $pageResult = $response.Controls |
-                        Where-Object {$_ -is [System.DirectoryServices.Protocols.PageResultResponseControl]} |
+                        Where-Object { $_ -is [System.DirectoryServices.Protocols.PageResultResponseControl] } |
                         Select-Object -First 1   # There should only be one, but this is defensive programming
 
                     if (-not $pageResult) {
