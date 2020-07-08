@@ -4,7 +4,7 @@
 # Customize these properties and tasks for your module.
 ###############################################################################
 
-# Settings for build script version 2.0.1
+# Settings for build script version 2.0.3
 
 # BuildHelpers makes these variables available:
 #

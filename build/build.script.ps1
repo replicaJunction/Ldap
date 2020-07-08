@@ -4,12 +4,12 @@
 ##############################################################################
 
 # This is an Invoke-Build build script.
-# Version 2.0.1
+# Version 2.0.3
 
 Set-StrictMode -Version Latest
 
 # Default task - used if -Task is not specified via command-line
-Task . Init, Build, Test, Analyze
+Task . Init, Build, Test, Analyze, BuildHelp
 
 # Initialize build variables from the BuildHelpers module
 # https://github.com/RamblingCookieMonster/BuildHelpers/issues/10
@@ -79,15 +79,15 @@ Task CreateMergedModule Init, {
 Task CopyFiles 'Init', {
     Write-Verbose "Checking for extra files in output directory"
     Get-ChildItem -Path $ArtifactModulePath -File |
-    Where-Object { -not (Get-ChildItem -Path $BHModulePath -Filter $_.Name ) } |
-    ForEach-Object { Write-Verbose "Removing extra file $($_.Name)"; $_ } |
-    Remove-Item -Force
+        Where-Object { -not (Get-ChildItem -Path $BHModulePath -Filter $_.Name ) } |
+        ForEach-Object { Write-Verbose "Removing extra file $($_.Name)"; $_ } |
+        Remove-Item -Force
 
     Write-Verbose "Copying additional files to module output directory"
     Get-ChildItem -Path $BHModulePath -File |
-    Where-Object { $_.Name -ne "$BHProjectName.psm1" } |
-    ForEach-Object { Write-Verbose "Copying file $($_.Name)"; $_ } |
-    Copy-Item -Destination $ArtifactModulePath -Force
+        Where-Object { $_.Name -ne "$BHProjectName.psm1" } |
+        ForEach-Object { Write-Verbose "Copying file $($_.Name)"; $_ } |
+        Copy-Item -Destination $ArtifactModulePath -Force
 }
 
 Task UpdateManifestFunctions Init, CopyFiles, CreateMergedModule, {
@@ -162,28 +162,25 @@ Task RunTests Init, {
     else {
         $oldModuleLoadingPreference = $global:PSModuleAutoLoadingPreference
     }
+    Import-Module Pester -ErrorAction Stop -Verbose:$false
     $global:PSModuleAutoLoadingPreference = 'None'
 
     Remove-Module $BHProjectName -Force -ErrorAction SilentlyContinue -Verbose:$false
     Import-Module $ArtifactManifestFile -Verbose:$false
 
-    # Since we just disabled module auto-loading, we need to import Pester ourselves
-    Import-Module Pester -ErrorAction Stop -Verbose:$false
-
-    $pesterParams = @{
-        Path         = $TestPath
-        ExcludeTag   = $ExcludeTag
-        PassThru     = $true
-        OutputFile   = $PesterXmlResultFile
-        OutputFormat = "NUnitXml"
-    }
+    $pesterConfig = [PesterConfiguration]::Default
+    $pesterConfig.Run.Path = $TestPath
+    $pesterConfig.Run.PassThru = $true
+    $pesterConfig.Filter.ExcludeTag = $ExcludeTag
+    $pesterConfig.TestResult.Enabled = $true
+    $pesterConfig.TestResult.OutputPath = $PesterXmlResultFile
+    $pesterConfig.TestResult.OutputFormat = 'NUnitXml'
 
     if ($CodeCoverageMinimum -and $CodeCoverageMinimum -gt 0) {
-        $pesterParams['CodeCoverage'] = @(Get-ChildItem -Path $BHModulePath -Filter '*.ps1' -Recurse | Select-Object -ExpandProperty FullName)
+        $pesterConfig.CodeCoverage.Path = Get-ChildItem -Path $BHModulePath -Filter '*.ps1' | Select-Object -ExpandProperty FullName
     }
 
-    Write-Verbose "Parameters for Invoke-Pester:`n$($pesterParams | Out-String)"
-    $testResults = Invoke-Pester @pesterParams
+    $testResults = Invoke-Pester -Configuration $pesterConfig
     $testResults | ConvertTo-Json -Depth 5 | Out-File $PesterJsonResultFile -Force
 
     # If running in a CI environment, publish tests results here
